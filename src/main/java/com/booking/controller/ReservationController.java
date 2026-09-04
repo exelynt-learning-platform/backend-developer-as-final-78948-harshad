@@ -72,6 +72,15 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Update reservation status or details")
+    public ResponseEntity<ReservationResponse> updateReservation(
+            @PathVariable Long id,
+            @RequestBody StatusUpdateRequest request) {
+        ReservationResponse response = reservationService.updateReservationStatus(id, request);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Cancel/delete reservation")
     public ResponseEntity<Void> cancelOrDeleteReservation(@PathVariable Long id) {

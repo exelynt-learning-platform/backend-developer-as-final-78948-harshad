@@ -2,18 +2,27 @@
 # ----------------------------------------------------------------------------
 # Maven Start Up bash script
 # ----------------------------------------------------------------------------
-DIR="$(cd "$(dirname "$0")" && pwd)"
-MAVEN_DIR="$DIR/.mvn/apache-maven-3.9.6"
 
-if [ -f "$MAVEN_DIR/bin/mvn" ]; then
-    exec "$MAVEN_DIR/bin/mvn" "$@"
+if [ -z "$MAVEN_SKIP_RC" ]; then
+  if [ -f /etc/mavenrc ]; then
+    . /etc/mavenrc
+  fi
+  if [ -f "$HOME/.mavenrc" ]; then
+    . "$HOME/.mavenrc"
+  fi
 fi
 
-echo "Downloading Apache Maven..."
-mkdir -p "$DIR/.mvn"
-curl -sSL "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.6/apache-maven-3.9.6-bin.zip" -o "$DIR/.mvn/maven.zip"
-unzip -q "$DIR/.mvn/maven.zip" -d "$DIR/.mvn"
-rm "$DIR/.mvn/maven.zip"
-chmod +x "$MAVEN_DIR/bin/mvn"
+if command -v mvn >/dev/null 2>&1; then
+    exec mvn "$@"
+fi
 
-exec "$MAVEN_DIR/bin/mvn" "$@"
+if [ -f "/usr/bin/mvn" ]; then
+    exec /usr/bin/mvn "$@"
+fi
+
+if [ -f "/usr/local/bin/mvn" ]; then
+    exec /usr/local/bin/mvn "$@"
+fi
+
+echo "Maven executable not found on system PATH."
+exit 1

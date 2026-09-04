@@ -33,30 +33,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Seed Seed Admin User if not present
-        if (!userRepository.existsByEmail("admin@booking.com")) {
-            User admin = new User(
-                    "admin@booking.com",
-                    passwordEncoder.encode("Admin@123"),
-                    "System Administrator",
-                    Role.ROLE_ADMIN
-            );
-            userRepository.save(admin);
-        }
+        // Seed Admin accounts
+        seedUserIfNotExists("admin@booking.com", "Admin@123", "System Administrator", Role.ROLE_ADMIN);
+        seedUserIfNotExists("admin@example.com", "admin123", "Admin Example", Role.ROLE_ADMIN);
+        seedUserIfNotExists("admin", "admin123", "Admin User", Role.ROLE_ADMIN);
 
-        // Seed Standard Test User if not present
-        User standardUser = null;
-        if (!userRepository.existsByEmail("user@booking.com")) {
-            standardUser = new User(
-                    "user@booking.com",
-                    passwordEncoder.encode("User@123"),
-                    "Jane Doe",
-                    Role.ROLE_USER
-            );
-            standardUser = userRepository.save(standardUser);
-        } else {
-            standardUser = userRepository.findByEmail("user@booking.com").orElse(null);
-        }
+        // Seed Standard User accounts
+        User standardUser = seedUserIfNotExists("user@booking.com", "User@123", "Jane Doe", Role.ROLE_USER);
+        seedUserIfNotExists("user@example.com", "user123", "User Example", Role.ROLE_USER);
+        seedUserIfNotExists("user", "user123", "Standard User", Role.ROLE_USER);
 
         // Seed Sample Resources if empty
         if (resourceRepository.count() == 0) {
@@ -111,5 +96,17 @@ public class DataInitializer implements CommandLineRunner {
                 reservationRepository.save(res2);
             }
         }
+    }
+
+    private User seedUserIfNotExists(String email, String rawPassword, String fullName, Role role) {
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User user = new User(
+                    email,
+                    passwordEncoder.encode(rawPassword),
+                    fullName,
+                    role
+            );
+            return userRepository.save(user);
+        });
     }
 }
