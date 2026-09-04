@@ -8,7 +8,6 @@ import com.booking.exception.ResourceNotFoundException;
 import com.booking.model.Reservation;
 import com.booking.model.ReservationStatus;
 import com.booking.model.Resource;
-import com.booking.model.Role;
 import com.booking.model.User;
 import com.booking.repository.ReservationRepository;
 import com.booking.repository.ReservationSpecification;
@@ -48,7 +47,7 @@ public class ReservationService {
 
         // If user is USER role, restrict search strictly to their own user ID
         Long filterUserId = null;
-        if (currentUser.getRole().equals(Role.ROLE_USER.name())) {
+        if (!isAdmin(currentUser)) {
             filterUserId = currentUser.getId();
         }
 
@@ -66,8 +65,7 @@ public class ReservationService {
         UserDetailsImpl currentUser = getCurrentAuthenticatedUser();
 
         // Check ownership if currentUser is not ADMIN
-        if (currentUser.getRole().equals(Role.ROLE_USER.name()) &&
-                !reservation.getUser().getId().equals(currentUser.getId())) {
+        if (!isAdmin(currentUser) && !reservation.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not authorized to view this reservation");
         }
 
@@ -118,8 +116,7 @@ public class ReservationService {
         UserDetailsImpl currentUser = getCurrentAuthenticatedUser();
 
         // Check ownership if currentUser is not ADMIN
-        if (currentUser.getRole().equals(Role.ROLE_USER.name()) &&
-                !reservation.getUser().getId().equals(currentUser.getId())) {
+        if (!isAdmin(currentUser) && !reservation.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not authorized to update this reservation");
         }
 
@@ -136,18 +133,22 @@ public class ReservationService {
         UserDetailsImpl currentUser = getCurrentAuthenticatedUser();
 
         // Check ownership if currentUser is not ADMIN
-        if (currentUser.getRole().equals(Role.ROLE_USER.name()) &&
-                !reservation.getUser().getId().equals(currentUser.getId())) {
+        if (!isAdmin(currentUser) && !reservation.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You are not authorized to cancel/delete this reservation");
         }
 
         // If USER cancels, set status to CANCELLED; if ADMIN, delete or cancel
-        if (currentUser.getRole().equals(Role.ROLE_ADMIN.name())) {
+        if (isAdmin(currentUser)) {
             reservationRepository.delete(reservation);
         } else {
             reservation.setStatus(ReservationStatus.CANCELLED);
             reservationRepository.save(reservation);
         }
+    }
+
+    private boolean isAdmin(UserDetailsImpl userDetails) {
+        return userDetails.getRole().contains("ADMIN") ||
+                userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().contains("ADMIN"));
     }
 
     private UserDetailsImpl getCurrentAuthenticatedUser() {

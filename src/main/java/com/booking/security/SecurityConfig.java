@@ -66,13 +66,13 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
 
                         // Resource endpoints: Read-only (GET) allowed for USER & ADMIN; Write (POST, PUT, DELETE) for ADMIN only
-                        .requestMatchers(HttpMethod.GET, "/resources/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/resources/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/resources/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/resources/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/resources/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/resources/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/resources/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/resources/**").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
 
                         // Reservation endpoints: USER and ADMIN can access, fine-grained ownership is verified in service/controller
-                        .requestMatchers("/reservations/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/reservations/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "USER", "ADMIN")
 
                         .anyRequest().authenticated()
                 );
