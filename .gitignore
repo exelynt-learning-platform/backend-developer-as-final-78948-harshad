@@ -1,0 +1,9 @@
+target/
+.mvn/apache-maven-3.9.6/
+*.log
+.DS_Store
+.idea/
+*.iml
+.settings/
+.classpath
+.project
