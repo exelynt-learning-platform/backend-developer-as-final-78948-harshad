@@ -76,8 +76,14 @@ public class ReservationService {
     public ReservationResponse createReservation(ReservationRequest request) {
         // Enforce USER identity strictly from JWT context
         UserDetailsImpl currentUserDetails = getCurrentAuthenticatedUser();
-        User user = userRepository.findById(currentUserDetails.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        User user;
+        if (request.getUserId() != null && isAdmin(currentUserDetails)) {
+            user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.getUserId()));
+        } else {
+            user = userRepository.findById(currentUserDetails.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        }
 
         // Validate Resource existence
         Resource resource = resourceRepository.findById(request.getResourceId())

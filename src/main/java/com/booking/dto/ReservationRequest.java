@@ -16,6 +16,12 @@ public class ReservationRequest {
     @JsonProperty("resource")
     private ResourceWrapper resource;
 
+    @JsonAlias({"user_id", "userId"})
+    private Long userId;
+
+    @JsonProperty("user")
+    private UserWrapper user;
+
     @NotNull(message = "Start time is required")
     @JsonAlias({"start_time", "startTime"})
     private LocalDateTime startTime;
@@ -44,6 +50,16 @@ public class ReservationRequest {
         if (resourceId != null) return resourceId;
         if (resource != null) return resource.getId();
         return null;
+    }
+
+    public Long getUserId() {
+        if (userId != null) return userId;
+        if (user != null) return user.getId();
+        return null;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public void setResourceId(Long resourceId) {
@@ -83,6 +99,12 @@ public class ReservationRequest {
     }
 
     public static class ResourceWrapper {
+        private Long id;
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+    }
+
+    public static class UserWrapper {
         private Long id;
         public Long getId() { return id; }
         public void setId(Long id) { this.id = id; }

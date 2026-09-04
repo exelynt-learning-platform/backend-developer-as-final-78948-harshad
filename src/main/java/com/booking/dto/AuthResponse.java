@@ -1,12 +1,30 @@
 package com.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AuthResponse {
 
+    @JsonProperty("token")
+    @JsonAlias({"access_token", "accessToken", "jwt", "jwt_token", "jwtToken"})
     private String token;
+
     private String type = "Bearer";
+
+    @JsonProperty("id")
+    @JsonAlias({"user_id", "userId"})
     private Long id;
+
+    @JsonProperty("email")
+    @JsonAlias({"user_email", "userEmail"})
     private String email;
+
+    @JsonProperty("fullName")
+    @JsonAlias({"full_name", "user_name", "userName", "name"})
     private String fullName;
+
+    @JsonProperty("role")
+    @JsonAlias({"user_role", "userRole", "authorities"})
     private String role;
 
     public AuthResponse() {}

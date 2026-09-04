@@ -138,6 +138,18 @@ public class DtoAndModelTest {
         StatusUpdateRequest sur = new StatusUpdateRequest();
         sur.setStatus(ReservationStatus.CANCELLED);
         assertEquals(ReservationStatus.CANCELLED, sur.getStatus());
+
+        ReservationRequest resReq = new ReservationRequest();
+        resReq.setUserId(5L);
+        assertEquals(5L, resReq.getUserId());
+
+        ReservationRequest.UserWrapper uw = new ReservationRequest.UserWrapper();
+        uw.setId(6L);
+        assertEquals(6L, uw.getId());
+
+        ReservationRequest.ResourceWrapper rw = new ReservationRequest.ResourceWrapper();
+        rw.setId(7L);
+        assertEquals(7L, rw.getId());
     }
 
     @Test
