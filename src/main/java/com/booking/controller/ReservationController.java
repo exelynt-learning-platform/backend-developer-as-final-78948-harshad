@@ -34,18 +34,27 @@ public class ReservationController {
     @Operation(summary = "Get reservations with optional filtering (status, minPrice, maxPrice) and pagination/sorting. ADMIN views all; USER views only their own.")
     public ResponseEntity<Page<ReservationResponse>> getReservations(
             @RequestParam(required = false) ReservationStatus status,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPriceCamel,
+            @RequestParam(name = "min_price", required = false) BigDecimal minPriceSnake,
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPriceCamel,
+            @RequestParam(name = "max_price", required = false) BigDecimal maxPriceSnake,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortByCamel,
+            @RequestParam(name = "sort_by", required = false) String sortBySnake,
+            @RequestParam(name = "sortDir", defaultValue = "desc") String sortDirCamel,
+            @RequestParam(name = "sort_dir", required = false) String sortDirSnake) {
 
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
-                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        BigDecimal effectiveMinPrice = minPriceCamel != null ? minPriceCamel : minPriceSnake;
+        BigDecimal effectiveMaxPrice = maxPriceCamel != null ? maxPriceCamel : maxPriceSnake;
+        String effectiveSortBy = sortBySnake != null ? sortBySnake : sortByCamel;
+        String effectiveSortDir = sortDirSnake != null ? sortDirSnake : sortDirCamel;
+
+        Sort sort = effectiveSortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(effectiveSortBy).ascending() : Sort.by(effectiveSortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<ReservationResponse> reservations = reservationService.getReservations(status, minPrice, maxPrice, pageable);
+        Page<ReservationResponse> reservations = reservationService.getReservations(status, effectiveMinPrice, effectiveMaxPrice, pageable);
         return ResponseEntity.ok(reservations);
     }
 

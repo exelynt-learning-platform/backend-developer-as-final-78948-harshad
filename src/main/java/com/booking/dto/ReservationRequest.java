@@ -1,6 +1,7 @@
 package com.booking.dto;
 
 import com.booking.model.ReservationStatus;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -9,28 +10,19 @@ import java.time.LocalDateTime;
 
 public class ReservationRequest {
 
-    @JsonProperty("resourceId")
+    @JsonAlias({"resource_id", "resourceId"})
     private Long resourceId;
-
-    @JsonProperty("resource_id")
-    private Long resourceIdSnake;
 
     @JsonProperty("resource")
     private ResourceWrapper resource;
 
     @NotNull(message = "Start time is required")
-    @JsonProperty("startTime")
+    @JsonAlias({"start_time", "startTime"})
     private LocalDateTime startTime;
 
-    @JsonProperty("start_time")
-    private LocalDateTime startTimeSnake;
-
     @NotNull(message = "End time is required")
-    @JsonProperty("endTime")
+    @JsonAlias({"end_time", "endTime"})
     private LocalDateTime endTime;
-
-    @JsonProperty("end_time")
-    private LocalDateTime endTimeSnake;
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = true, message = "Price must be a non-negative decimal value")
@@ -50,7 +42,6 @@ public class ReservationRequest {
 
     public Long getResourceId() {
         if (resourceId != null) return resourceId;
-        if (resourceIdSnake != null) return resourceIdSnake;
         if (resource != null) return resource.getId();
         return null;
     }
@@ -60,7 +51,7 @@ public class ReservationRequest {
     }
 
     public LocalDateTime getStartTime() {
-        return startTime != null ? startTime : startTimeSnake;
+        return startTime;
     }
 
     public void setStartTime(LocalDateTime startTime) {
@@ -68,7 +59,7 @@ public class ReservationRequest {
     }
 
     public LocalDateTime getEndTime() {
-        return endTime != null ? endTime : endTimeSnake;
+        return endTime;
     }
 
     public void setEndTime(LocalDateTime endTime) {
